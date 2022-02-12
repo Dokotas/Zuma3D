@@ -1,0 +1,45 @@
+.button {
+    width: 30%;
+    height: 9%;
+    color: rgb(11, 137, 188);
+    background-color: rgba(255, 255, 255, 0);
+    font-size: 72px;
+    -unity-font-style: bold;
+    border-radius: 50px;
+    border-color: rgb(12, 138, 188);
+    border-width: 15px;
+    margin-bottom: 4%;
+    transition-duration: 0.01s;
+}
+
+.button:hover {
+    background-color: rgba(12, 138, 188, 0.5);
+    transition-duration: 1s;
+}
+
+.button:active {
+    background-color: rgba(12, 138, 188, 0.7);
+    color: rgb(38, 82, 140);
+    border-color: rgb(38, 82, 140);
+    transition-duration: 0s;
+}
+
+.logo {
+    width: 60%;
+    height: 27%;
+    margin-bottom: 5%;
+    font-size: 240px;
+    color: rgb(38, 82, 140);
+    -unity-font-style: bold;
+    text-shadow: 15px 10px 0 rgb(98, 183, 217);
+    -unity-text-align: upper-center;
+    border-radius: 9px;
+    margin-top: 5%;
+    transition-duration: 1s;
+}
+
+.logo:hover {
+    font-size: 260px;
+    transition-timing-function: ease;
+    transition-duration: 1s;
+}

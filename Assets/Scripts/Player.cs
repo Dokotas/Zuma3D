@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(mousePosition),
             Time.deltaTime * rotationSpeed);
 
-        if (Input.GetMouseButtonDown(0) && !_reload)
+        if (Input.GetMouseButtonDown(0) && !_reload && !_gameManager.pause)
             StartCoroutine(Shot());
     }
 

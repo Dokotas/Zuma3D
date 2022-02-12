@@ -1,20 +1,23 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using PathCreation;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
     public Material[] ballsColors;
-    [SerializeField] private GameObject ballPrefab;
+    [SerializeField] private GameObject ballPrefab, endMenu, endLabel;
     [HideInInspector] public GameObject[] balls;
     [HideInInspector] public VertexPath path;
 
-    [SerializeField] private int countOfStartBalls;
+    [SerializeField] private int countOfStartBalls, maxAmountOfBalls;
     [SerializeField] private float spawnBallDeltaTime;
     [HideInInspector] public int length;
+    [HideInInspector] public bool pause;
+    public int amountOfBalls;
 
 
     private void Start()
@@ -26,21 +29,28 @@ public class GameManager : MonoBehaviour
         StartCoroutine(Game());
     }
 
+    private int StartOfSequence()
+    {
+        int i;
+        for (i = 0; i < length; i++)
+        {
+            if (balls[i])
+                break;
+        }
+
+        return i;
+    }
 
     private int EndOfSequence(int startIndex)
     {
-        int end = 0;
-
-        for (int i = startIndex; i < length; i++)
+        int i;
+        for (i = startIndex; i < length; i++)
         {
             if (!balls[i])
-            {
-                end = i;
                 break;
-            }
         }
 
-        return end;
+        return i;
     }
 
     private void CreateBall(int index, int colorIndex)
@@ -50,6 +60,7 @@ public class GameManager : MonoBehaviour
         var newBall = balls[index].GetComponent<Ball>();
         newBall.index = index;
         newBall.colorIndex = colorIndex;
+        amountOfBalls++;
     }
 
     public void RemoveSameBalls(int index)
@@ -86,6 +97,9 @@ public class GameManager : MonoBehaviour
             foreach (var ball in sameBalls)
                 Destroy(ball);
         }
+
+        if (!AnyBalls())
+            EndGame("You Win");
     }
 
     public void PopBall(int index, int colorIndex)
@@ -97,7 +111,6 @@ public class GameManager : MonoBehaviour
 
     private void MoveBalls(int startIndex, int endIndex)
     {
-        var t = balls[endIndex];
         for (int i = endIndex; i > startIndex; i--)
         {
             balls[i] = balls[i - 1];
@@ -107,6 +120,18 @@ public class GameManager : MonoBehaviour
                 balls[i].GetComponent<Ball>().Move();
             }
         }
+        Destroy(balls[startIndex]);
+    }
+
+    private bool AnyBalls()
+    {
+        foreach (var ball in balls)
+        {
+            if (ball)
+                return true;
+        }
+
+        return false;
     }
 
     private IEnumerator Game()
@@ -120,30 +145,44 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(.1f * .009f);
         }
 
-        while (true)
+        while (!balls[length - 2])
         {
-            if (balls[length - 1])
+            var startIndex = StartOfSequence();
+            var endIndex = EndOfSequence(startIndex);
+
+            MoveBalls(startIndex, endIndex);
+            yield return new WaitForSeconds(spawnLag / 2);
+
+            if (balls[endIndex + 1])
+                if (balls[endIndex].GetComponent<Ball>().colorIndex ==
+                    balls[endIndex + 1].GetComponent<Ball>().colorIndex)
+                    RemoveSameBalls(endIndex);
+
+            yield return new WaitForSeconds(spawnLag / 2);
+
+            if (amountOfBalls < maxAmountOfBalls)
             {
-                Lose();
-                break;
+                CreateBall(0, Random.Range(0, ballsColors.Length));
             }
 
-            var endIndex = EndOfSequence(0);
-
-            MoveBalls(0, endIndex);
-            yield return new WaitForSeconds(.1f);
-            if (balls[endIndex+1])
-                RemoveSameBalls(endIndex);
-            
-            yield return new WaitForSeconds(spawnLag);
-            CreateBall(0, Random.Range(0, ballsColors.Length));
             yield return new WaitForSeconds(spawnBallDeltaTime - spawnLag);
         }
+
+        EndGame("You lose");
     }
 
-    private void Lose()
+    private void EndGame(string endText)
     {
-        Debug.Log("You lose");
-        //Time.timeScale = 0;
+        pause = true;
+        endLabel.GetComponent<TextMeshProUGUI>().text = endText;
+        endMenu.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void RestartGame()
+    {
+        pause = false;
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Game");
     }
 }

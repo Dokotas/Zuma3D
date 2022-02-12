@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Style.uss?fileID=7433441132597879392&amp;guid=98c0910a991ede744b4d8b0c45ecb892&amp;type=3#Style" />
+    <ui:VisualElement name="BackGround" style="align-items: center; width: 100%; height: 100%; justify-content: flex-start; background-color: rgb(179, 224, 242);">
+        <ui:Label text="Zuma3D" display-tooltip-when-elided="true" name="Logo" class="logo" style="height: 25%;" />
+        <ui:Button text="Start" display-tooltip-when-elided="true" name="Start" class="button" />
+        <ui:Button text="Settings" display-tooltip-when-elided="true" name="Settings" class="button" />
+    </ui:VisualElement>
+</ui:UXML>
