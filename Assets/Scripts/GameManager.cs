@@ -14,10 +14,10 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public VertexPath path;
 
     [SerializeField] private int countOfStartBalls, maxAmountOfBalls;
-    [SerializeField] private float spawnBallDeltaTime;
+    [SerializeField] private float secondsPerFrame;
     [HideInInspector] public int length;
     [HideInInspector] public bool pause;
-    public int amountOfBalls;
+    int amountOfBalls;
 
 
     private void Start()
@@ -35,10 +35,10 @@ public class GameManager : MonoBehaviour
         for (i = 0; i < length; i++)
         {
             if (balls[i])
-                break;
+                return i;
         }
 
-        return i;
+        return 0;
     }
 
     private int EndOfSequence(int startIndex)
@@ -47,10 +47,10 @@ public class GameManager : MonoBehaviour
         for (i = startIndex; i < length; i++)
         {
             if (!balls[i])
-                break;
+                return i;
         }
 
-        return i;
+        return 0;
     }
 
     private void CreateBall(int index, int colorIndex)
@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
 
     public void RemoveSameBalls(int index)
     {
-        List<GameObject> sameBalls = new List<GameObject>();
+        var sameBalls = new List<GameObject>();
         int colorIndex = balls[index].GetComponent<Ball>().colorIndex;
 
         for (int i = index; i >= 0; i--)
@@ -95,7 +95,10 @@ public class GameManager : MonoBehaviour
         if (sameBalls.Count > 2)
         {
             foreach (var ball in sameBalls)
+            {
+                balls[ball.GetComponent<Ball>().index] = null;
                 Destroy(ball);
+            }
         }
 
         if (!AnyBalls())
@@ -109,25 +112,28 @@ public class GameManager : MonoBehaviour
         RemoveSameBalls(index);
     }
 
+    public void InsertBall(int index, int colorIndex)
+    {
+        CreateBall(index, colorIndex);
+        RemoveSameBalls(index);
+    }
+
     private void MoveBalls(int startIndex, int endIndex)
     {
         for (int i = endIndex; i > startIndex; i--)
         {
             balls[i] = balls[i - 1];
-
-            if (balls[i])
-            {
-                balls[i].GetComponent<Ball>().Move();
-            }
+            balls[i].GetComponent<Ball>().Move();
         }
-        Destroy(balls[startIndex]);
+
+        balls[startIndex] = null;
     }
 
     private bool AnyBalls()
     {
-        foreach (var ball in balls)
+        for (int i = 0; i < length; i++)
         {
-            if (ball)
+            if (balls[i])
                 return true;
         }
 
@@ -139,20 +145,23 @@ public class GameManager : MonoBehaviour
         var spawnLag = .1f;
         for (int i = 0; i < countOfStartBalls; i++)
         {
-            MoveBalls(0, EndOfSequence(0));
-            yield return new WaitForSeconds(.001f);
             CreateBall(0, Random.Range(0, ballsColors.Length));
             yield return new WaitForSeconds(.1f * .009f);
+            MoveBalls(0, EndOfSequence(0));
+            yield return new WaitForSeconds(.001f);
         }
 
         while (!balls[length - 2])
         {
+            if (amountOfBalls < maxAmountOfBalls)
+                CreateBall(0, Random.Range(0, ballsColors.Length));
+
+            yield return new WaitForSeconds(spawnLag / 2);
+
             var startIndex = StartOfSequence();
             var endIndex = EndOfSequence(startIndex);
 
             MoveBalls(startIndex, endIndex);
-            yield return new WaitForSeconds(spawnLag / 2);
-
             if (balls[endIndex + 1])
                 if (balls[endIndex].GetComponent<Ball>().colorIndex ==
                     balls[endIndex + 1].GetComponent<Ball>().colorIndex)
@@ -160,12 +169,8 @@ public class GameManager : MonoBehaviour
 
             yield return new WaitForSeconds(spawnLag / 2);
 
-            if (amountOfBalls < maxAmountOfBalls)
-            {
-                CreateBall(0, Random.Range(0, ballsColors.Length));
-            }
 
-            yield return new WaitForSeconds(spawnBallDeltaTime - spawnLag);
+            yield return new WaitForSeconds(secondsPerFrame - spawnLag);
         }
 
         EndGame("You lose");

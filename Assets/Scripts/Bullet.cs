@@ -20,7 +20,10 @@ public class Bullet : MonoBehaviour
         if (other.collider.CompareTag("Ball") && !_hit)
         {
             var ball = other.collider.GetComponent<Ball>();
-            _gameManager.PopBall(ball.index, colorIndex);
+            if(_gameManager.balls[ball.index+1])
+                _gameManager.PopBall(ball.index, colorIndex);
+            else 
+                _gameManager.InsertBall(ball.index+1, colorIndex);
             Destroy(gameObject);
             _hit = true;
         }

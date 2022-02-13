@@ -1111,7 +1111,7 @@ MonoBehaviour:
       - 0
       globalNormalsAngle: 0
       flipNormals: 0
-    vertexPathUpToDate: 1
+    vertexPathUpToDate: 0
     vertexPathMaxAngleError: 0
     vertexPathMinVertexSpacing: 0
     showTransformTool: 1
@@ -1500,18 +1500,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballsColors:
   - {fileID: 2100000, guid: 5147c917163082e4a9e7054ebdbca2ab, type: 2}
-  - {fileID: 2100000, guid: 71d50f60ae005e645872e3f80502eeeb, type: 2}
   - {fileID: 2100000, guid: 9f7f511992d48b34991b6708a63300fd, type: 2}
+  - {fileID: 2100000, guid: 71d50f60ae005e645872e3f80502eeeb, type: 2}
   ballPrefab: {fileID: 5964085605826659340, guid: 735676d7bad0df04092b643d94ad5ed3, type: 3}
   endMenu: {fileID: 9536388}
   endLabel: {fileID: 98592314}
   balls: []
-  countOfStartBalls: 25
-  maxAmountOfBalls: 30
-  spawnBallDeltaTime: 0.5
+  countOfStartBalls: 8
+  maxAmountOfBalls: 20
+  secondsPerFrame: 0.7
   length: 0
   pause: 0
-  amountOfBalls: 0
 --- !u!4 &2105498194
 Transform:
   m_ObjectHideFlags: 0
