@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class Player : MonoBehaviour
     private Renderer _currentColor;
     private GameManager _gameManager;
 
-    [SerializeField] private float rotationSpeed, shotForce, coldDownTime;
+    [SerializeField] private float sensivity, shotForce, coldDownTime;
+    private float _rotationSpeed;
     private bool _reload;
     private int _currentColorIndex;
 
@@ -20,6 +22,7 @@ public class Player : MonoBehaviour
         _currentColor = indicationBall.GetComponent<Renderer>();
         _currentColorIndex = Random.Range(0, _gameManager.ballsColors.Length);
         _currentColor.material = _gameManager.ballsColors[_currentColorIndex];
+        _rotationSpeed = 1 + sensivity;
     }
 
     private void Update()
@@ -27,7 +30,7 @@ public class Player : MonoBehaviour
         var mousePosition = GetMousePosition();
 
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(mousePosition),
-            Time.deltaTime * rotationSpeed);
+            Time.deltaTime * _rotationSpeed);
 
         if (Input.GetMouseButtonDown(0) && !_reload && !_gameManager.pause)
             StartCoroutine(Shot());
@@ -37,22 +40,22 @@ public class Player : MonoBehaviour
     {
         _reload = true;
         indicationBall.SetActive(false);
-        
+
         var bullet = Instantiate(bulletPrefab, gun.position + gun.forward, Quaternion.identity);
-        
+
         bullet.GetComponent<Bullet>().colorIndex = _currentColorIndex;
         bullet.GetComponent<Renderer>().material = _currentColor.material;
         bullet.GetComponent<Rigidbody>().AddForce(gun.forward * shotForce);
 
         _currentColorIndex = Random.Range(0, _gameManager.ballsColors.Length);
         _currentColor.material = _gameManager.ballsColors[_currentColorIndex];
-        
+
         yield return new WaitForSeconds(coldDownTime);
-        
+
         _reload = false;
         indicationBall.SetActive(true);
     }
-    
+
 
     private Vector3 GetMousePosition()
     {
@@ -67,5 +70,11 @@ public class Player : MonoBehaviour
         }
 
         return mousePosition;
+    }
+
+    public void SetSensivity()
+    {
+        var value = _gameManager.sensitivitySlider.value;
+        _rotationSpeed = 1 + sensivity * value / .7f;
     }
 }

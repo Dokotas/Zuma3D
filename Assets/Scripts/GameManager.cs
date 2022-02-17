@@ -4,11 +4,13 @@ using PathCreation;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
     public Material[] ballsColors;
+    public Slider sensitivitySlider;
     [SerializeField] private GameObject ballPrefab, endMenu, endLabel;
     [HideInInspector] public GameObject[] balls;
     [HideInInspector] public VertexPath path;
@@ -178,16 +180,22 @@ public class GameManager : MonoBehaviour
 
     private void EndGame(string endText)
     {
-        pause = true;
+        SetPause(true);
+        
         endLabel.GetComponent<TextMeshProUGUI>().text = endText;
         endMenu.SetActive(true);
-        Time.timeScale = 0;
     }
 
     public void RestartGame()
     {
-        pause = false;
-        Time.timeScale = 1;
+        SetPause(false);
+        
         SceneManager.LoadScene("Game");
+    }
+
+    public void SetPause(bool isPause)
+    {
+        pause = isPause;
+        Time.timeScale = pause ? 0f : 1f;
     }
 }
